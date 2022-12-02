@@ -1,0 +1,22 @@
+actor: ApiTester
+modules:
+    enabled:
+        - Asserts
+        - \Helper\Rest:
+              url: http://web/api/v1/
+              depends: PhpBrowser
+              part: Json
+        - \Helper\Db:
+              dsn: '%AIRSEND_CLOUD_DB_TESTS_HOST%'
+              user: '%AIRSEND_CLOUD_DB_TESTS_USER%'
+              password: '%AIRSEND_CLOUD_DB_PASSWORD%'
+              cleanup: true
+              populate: true
+              populator: 'bash resources/db/tests_populator.sh init'
+              cleanup_script: 'bash resources/db/tests_populator.sh'
+        - Redis:
+              host: 'redis'
+              port: 6379
+              database: 0
+              cleanupBefore: 'test'
+        - \Helper\Api

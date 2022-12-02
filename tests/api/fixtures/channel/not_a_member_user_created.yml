@@ -1,0 +1,30 @@
+users:
+  - id: '91010002'
+    email: notamember@airsendmail.com
+    phone: null
+    password:
+      filter: passwordFilter
+      params: password1
+    display_name: 'Not a Member Channel Test User'
+    has_avatar: '0'
+    user_role: '50'
+    account_status: '100'
+    approval_status: '10'
+    trust_level: '0'
+    online_status: '0'
+    is_auto_pwd: '0'
+    is_terms_agreed: '0'
+    is_tour_complete: '0'
+    is_email_verified: '1'
+    is_phone_verified: '0'
+    date_format: null
+    time_format: null
+    lang_code: en
+    invited_by: null
+    is_pwd_reset: '0'
+    is_locked: '0'
+    last_active_on: '2019-12-10 02:25:06'
+    notifications_config: '3'
+    created_on: '2019-12-10 02:25:05'
+    updated_on: '2019-12-10 02:25:07'
+    updated_by: '91000000'

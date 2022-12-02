@@ -1,0 +1,5476 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://live.airsend.io/api/v1'
+info:
+  description: AirSend HTTP API
+  version: 1.0.0
+  title: AirSend API
+  contact:
+    email: support@codelathe.com
+tags:
+  - name: users
+    description: APIs related to users
+  - name: channels
+    description: APIs related to channels
+  - name: channel.group
+    description: APIs related to channel groups
+  - name: chat
+    description: APIs related to chat
+  - name: files
+    description: APIs related to files
+  - name: wiki
+    description: APIs related to wiki
+  - name: actions
+    description: APIs related to actions
+  - name: realtime
+    description: APIs related to realtime
+  - name: system
+    description: APIs related to system
+  - name: wopi
+    description: APIs related to office online document editing
+  - name: lock
+    description: APIs related to file lock and unlock
+  - name: oauth
+    description: APIs related to the internal OAuth server.
+  - name: call
+    description: APIs related to calls
+
+paths:
+  /user.login:
+    post:
+      tags:
+        - users
+      summary: user.login - Login  user.
+      operationId: user.login
+      description: |
+        Login user
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                remember_me:
+                  type: boolean
+                timezone:
+                  type: string
+                  description: Browser timezone. This value will be ignored if the user already have a timezone set.
+
+              required:
+                - user
+                - password
+      responses:
+        '200':
+          description: results of the user create operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  token:
+                    type: string
+                    example: >-
+                      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsIng1YyI6IkxTMHRMUzFDUlVkSlRpQlFWVUpNU1VNZ1MwVlpMUzB0TFMwS1RVbEhaazFCTUVkRFUzRkhVMGxpTTBSUlJVSkJVVlZCUVRSSFRrRkVRMEpwVVV0Q1oxRkVObEIxTkVNMWJVbHJMMHRITUZkVWJtSTBXREV4TXpGcmFRcFhPWGg2YlhJMWRXVkhXakU1U0dSVmNVd3diRVUyY1hGd0swUkxkV2xpYkU5dGFFWlplVloyU0RKTVNWQk1OMGwwWlc4d1JWRlNjV1UwWnl0eVF6VjNDbGRhVW5aWWVrNWtkbkpCWlVkRmNEaHZURVk1Um5vNEswZFViVmRrYm1ocE4ybHplV1ZVV0ZGc2RtSlViMFprU25aMFVIaFBlR3QzTlROeVQyTjNkMGtLYmxWdFJXUlROWEZwWWxvNVpUaEdZMlYzU1VSQlVVRkNDaTB0TFMwdFJVNUVJRkJWUWt4SlF5QkxSVmt0TFMwdExRbyJ9.eyJzdWIiOjkxMDEwMDA5LCJqdGkiOiI1ZGEwYTgwNzQ1YzBhIiwiaXNzIjoiQWlyU2VuZCBTZXJ2ZXIiLCJpYXQiOjE1NzA4MDk4NjMsIm5iZiI6MTU3MDgwOTg2MywiZXhwIjoxNTcwODEzNDYzLCJjaXAiOiIxNzIuMTkuMC4xIiwiY2FnIjoiUG9zdG1hblJ1bnRpbWVcLzcuMTcuMSJ9.hVE73_oxptILE8eDt6cT1S0layxhc0bQy3CHUwakCSmyKCKfqN_Xg2H2zJ2tyZrWizPJ6_V4iJi9XwPFcyTqulieZFXwmHxW-RVlcXoZfpHefQVGxtEc8ePMCVBJ5wr1_rF1Fqta843dUoPqufDZt-ALqH7O6oZZUz6kIzShsl0"
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.login.refresh:
+    post:
+      tags:
+        - users
+      summary: user.login.refresh - Refreshes user login
+      operationId: user.login.refresh
+      description: >
+        Refreshes auth token from a authenticated user.
+
+        This endpoint don't check for auth expiration, but verifies if a valid refresh token (rtk claim on jwt) is set.
+        So it's possible to use this endpoint to refresh tokens, even when expired. The refresh token will only be
+        available if the user set remember_me on the login process.
+        A refresh token can only be used one time.
+
+
+        As a part of this refresh process, these steps are needed if you use RTM
+        service.
+
+        1. Perform user.login.refresh in HTTP backend before expiration of your
+        current token
+
+        2. Perform rtm.connect to get get a new RTM token
+
+        3. send the auth command in websocket to refresh the session with the
+        new token
+
+
+
+        Type a message
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The refreshed token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: >-
+            The current token could not be validated, so it's impossible to
+            refresh it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.logout:
+    post:
+      tags:
+        - users
+      summary: user.logout - Logs a user out, revoking the token
+      operationId: user.logout
+      description: >
+        Revokes the token used as authentication for the request. Works for internal JWT token, and for Oauth tokens.
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '202':
+          description: Empty successful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: >-
+            The current token could not be validated, so it's impossible to
+            revoke it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.create:
+    post:
+      tags:
+        - users
+      summary: user.create - create a new user
+      operationId: user.create
+      description: |
+        Create a new user
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                password:
+                  type: string
+              required:
+                - password
+      responses:
+        '200':
+          description: results of the user create operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.info:
+    get:
+      tags:
+        - users
+      summary: user.info - Get information about an user.
+      operationId: user.info
+      description: >
+        Get information about an user. user_id or email is required for this
+        endpoint.
+        This endpoint can be accessed using a notification token (without been authenticated).
+        If none of the parameters are included (email, phone or user_id), the logged user info will be returned.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: The email id of the user to retrieve
+          required: false
+        - in: query
+          name: user_id
+          schema:
+            type: string
+          description: The user id of the user to retrieve
+          required: false
+        - in: query
+          name: phone
+          schema:
+            type: string
+          description: The phone of the user to retrieve
+          required: false
+      responses:
+        '200':
+          description: >-
+            results of the user create operation if the requesting user is info
+            of the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.profile.set:
+    post:
+      tags:
+        - users
+      summary: user.profile.set - Set profile of current user
+      operationId: user.profile.set
+      description: |
+        Set a profile information of currently logged in user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Display name
+                email:
+                  type: string
+                  description: Email
+                phone:
+                  type: string
+                  description: Phone number
+      responses:
+        '200':
+          description: results of the user profile set operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.image.set:
+    post:
+      tags:
+        - users
+      summary: user.image.set - Set profile image for current user
+      operationId: user.image.set
+      description: |
+        Set a profile image of currently logged in user. Three versions
+        of the image will be automatically stored and can be retrieved
+        using user.image.get api
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: results of the user image upload operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.image.get:
+    get:
+      tags:
+        - users
+      summary: user.image.get - Get profile image of a user
+      operationId: user.image.get
+      description: |
+        Get profile image of a  user.
+        This endpoint can be accessed using a notification token (without been authenticated). The auth/token expiration
+        is not verified for this endpoint.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+          description: The user id of the profile image to retrieve
+          required: true
+        - in: query
+          name: image_class
+          schema:
+            type: string
+          description: 'This can be small, medium or full to retrieve the image'
+          required: true
+      responses:
+        '200':
+          description: Downloads a image
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.alerts:
+    get:
+      tags:
+        - users
+      summary: user.alerts - Get alerts for a user
+      operationId: user.alerts
+      description: |
+        Return all alert record for a user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All available alerts for a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  alerts:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/MessageAlert'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.alert.ack:
+    post:
+      tags:
+        - users
+      summary: user.alert.ack - Acknowledge reading an alert
+      operationId: user.alert.ack
+      description: |
+        Mark an alert as read
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                alert_id:
+                  type: integer
+                  description: The id of the alert record to mark as read
+              required:
+                - alert_id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: results of the user create operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.notifications.manage:
+    post:
+      tags:
+        - users
+      summary: user.notifications.manage - Manage user notifications
+      operationId: user.notifications.manage
+      description: |
+        Set the subscribing level for notifications on the user.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                notification_option:
+                  type: integer
+                  enum: [0,1,2]
+                  description: >
+                    Notification option (can be any of the values below):
+                      * `0` - No notifications (completely unsubscribe)
+                      * `1` - Only notify mentions
+                      * `2` - Notify all unread messages
+              required:
+                - notification_option
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Results of the notifications subscription change
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.notifications.report:
+    post:
+      tags:
+        - users
+        - notifications
+      summary: user.notifications.report - Reports abuse on notifications
+      operationId: user.notifications.report
+      description: |
+        Creates a new abuse report for notifications.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                reporter_name:
+                  type: string
+                reporter_email:
+                  type: string
+                report_text:
+                  type: string
+              required:
+                - reporter_name
+                - reporter_email
+                - report_text
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Result of the abuse report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.verify:
+    post:
+      tags:
+        - users
+      summary: user.verify - Verify email or phone for the user
+      operationId: user.verify
+      description: |
+        Verify the email of phone for the user account.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  description: The email or phone of the user to verify
+                verify_code:
+                  type: string
+                  description: The verify code received by the user for verification
+      responses:
+        '200':
+          description: results of the verify user operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /user.finalize:
+    post:
+      tags:
+        - users
+      summary: user.finalize - Finalize the user invited to a channel
+      operationId: user.finalize
+      description: |
+        This endpoint can be accessed using a notification token (without been authenticated). The auth/token expiration
+        is not verified for this endpoint.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Display name
+                user:
+                  type: string
+                  description: Email or Phone of the user
+                password:
+                  type: string
+                  description: Password for the user account
+      responses:
+        '200':
+          description: results of the user finalize set operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /password.recover:
+    post:
+      tags:
+        - password
+      summary: >-
+        password.recover - Set the password reovery code. Email or Phone is
+        Required.
+      operationId: password.recover
+      description: |
+        Set password recovery code. Email or Phone is required
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                opt_email:
+                  type: string
+                opt_phone:
+                  type: string
+      responses:
+        '200':
+          description: results of the password recovery operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /password.reset:
+    post:
+      tags:
+        - password
+      summary: password.reset - Reset Password for the user
+      operationId: password.reset
+      description: |
+        Reset the password for the user
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                reset_code:
+                  type: string
+                password:
+                  type: string
+              required:
+                - user_id
+                - reset_code
+                - password
+      responses:
+        '200':
+          description: results of the password reset operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /password.update:
+    post:
+      tags:
+        - password
+      summary: password.update - Update Password for the user
+      operationId: password.upate
+      description: |
+        Update the password for the user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+              required:
+                - user_id
+                - current_password
+                - new_password
+      responses:
+        '200':
+          description: results of the password update operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /chat.postmessage:
+    post:
+      tags:
+        - chat
+      summary: chat.postmessage - Post a message to a channel
+      operationId: chat.postmessage
+      description: >
+        Post a message to a channel. User must have write level permission in
+        the channel to post.
+
+        chat.postMessage event will be sent to other users in realtime socket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                text:
+                  type: string
+                attachments:
+                  type: string
+                  description: >-
+                    Optional - Array of JSON encoded strings for storing file
+                    attachment Each JSON record will result in an attachment To
+                    send a file attachment, First upload file(s) and send that
+                    as an array in attachments" field.
+                quote_message_id:
+                  type: string
+                  description: Optional - For quoting another message.
+                send_email:
+                  type: boolean
+                  description: Optional - Send a email message to all users of the channel in addition to posting in the channel.
+
+              required:
+                - channel_id
+                - text
+      responses:
+        '200':
+          description: Results of post message operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  message_id:
+                    type: integer
+                    example: 10000
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /chat.command:
+    post:
+      tags:
+        - chat
+      summary: chat.command - Send a slash command inside a channel
+      operationId: chat.command
+      description: >
+        Send a slash command inside a channel.
+
+        The slash command signature is parsed and validated on the backend.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                text:
+                  type: string
+              required:
+                - channel_id
+                - text
+      responses:
+        '200':
+          description: >
+            Results of command operation.
+            The response payload can contains a success message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  message:
+                    type: string
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /chat.updatemessage:
+    post:
+      tags:
+        - chat
+      summary: chat.updatemessage - Update a message to a channel
+      operationId: chat.updatemessage
+      description: >
+        Update a message already posted. Only the creator of the message can
+        update it.
+
+        chat.updateMessage event will be sent to other users in realtime socket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                message_id:
+                  type: integer
+                text:
+                  type: string
+              required:
+                - message_id
+                - text
+      responses:
+        '200':
+          description: Results of update message operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /chat.reactmessage:
+    post:
+      tags:
+        - chat
+      summary: chat.reactmessage - Add or remove emoji to/from a message in a channel
+      operationId: chat.reactmessage
+      description: >
+        React to or remove reaction from a message already posted.
+
+        chat.updateMessage event will be sent to other users in realtime socket and alert will be generated to the owner of the message
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                message_id:
+                  type: integer
+                emoji_value:
+                  type: string
+                remove:
+                  type: boolean
+              required:
+                - message_id
+                - emoji_value
+      responses:
+        '200':
+          description: Results of react message operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /chat.deletemessage:
+    post:
+      tags:
+        - chat
+      summary: chat.deletemessage - Delete a previously posted message in a channel
+      operationId: chat.deletemessage
+      description: >
+        Delete a previously posted message in a channel. Only the creator of the
+        message can delete it.
+
+        chat.deleteMessage event will be sent to other users in realtime socket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                message_id:
+                  type: integer
+              required:
+                - message_id
+      responses:
+        '200':
+          description: Results of update message operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.upload:
+    post:
+      tags:
+        - files
+      summary: file.upload - upload file
+      operationId: file.upload
+      description: |
+        Upload a file
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+        - in: query
+          name: start
+          schema:
+            type: integer
+          description: >-
+            (Optional) Optional offset from which file is being uploaded.
+            Default is 0 which is the beginning of the file.
+
+
+            When uploading very large files, you will want to send complete = 0
+            and then upload chunks one by one by moving the start value and
+            complete the upload by sending complete=1 with the last chunk.
+
+            Authentication is required to call this method
+          required: false
+        - in: query
+          name: complete
+          schema:
+            type: integer
+          description: >-
+            (Optional) Indicates whether file is fully uploaded when set to 1.
+            Default is 1 which means the file upload is complete.
+          required: false
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.download:
+    get:
+      tags:
+        - files
+      summary: file.download - download file
+      operationId: file.download
+      description: |
+        Download a file
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+        - in: query
+          name: versionid
+          description: >-
+            (Optional)Version identifier as returned by the file.list call. Can
+            only be retrieved if you have write permissions to the resource.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Downloads a file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.create:
+    post:
+      tags:
+        - files
+      summary: file.create - creates a folder
+      operationId: file.create
+      description: |
+        creates a folder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fsparent:
+                  type: string
+                  description: |-
+                    path to parent where the new folder should be created
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+                fsname:
+                  type: string
+                  description: name of the folder to create
+              required:
+                - fsparent
+                - fsname
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.list:
+    get:
+      tags:
+        - files
+      summary: file.list - get list of files for a given path
+      operationId: file.list
+      description: |
+        get list of files for a given path
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: fspath
+          description: >-
+            path to location. If an empty path is provided, the user level top
+            folders are provided.
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: start
+          schema:
+            type: integer
+          description: >-
+            (Optional) Offset from which the listing items should be retrieved.
+            Default value is 0.
+          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: >-
+            (Optional) The max number of items to retrieve. Default value is
+            100. To get all items, specify -1
+          required: false
+      responses:
+        '200':
+          description: Lists the children for a path
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  total:
+                    type: integer
+                    example: 4
+                  files:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/File'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.copy:
+    post:
+      tags:
+        - files
+      summary: file.copy - copy file or folder from one path to another
+      operationId: file.copy
+      description: |
+        copy file or folder from one path to another
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fsfrompath:
+                  type: string
+                  description: |-
+                    path to location to copy from
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+                fstopath:
+                  type: string
+                  description: |-
+                    path to location to copy to
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+              required:
+                - fsfrompath
+                - fstopath
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.move:
+    post:
+      tags:
+        - files
+      summary: file.move - move file or folder from one path to another
+      operationId: file.move
+      description: |
+        move file or folder from one path to another
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fsfrompath:
+                  type: string
+                  description: |-
+                    path to location to move from
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+                fstopath:
+                  type: string
+                  description: |-
+                    path to location to move to
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+              required:
+                - fsfrompath
+                - fstopath
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.delete:
+    post:
+      tags:
+        - files
+      summary: file.delete - delete file or folder
+      operationId: file.delete
+      description: |
+        delete file or folder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fspath:
+                  type: string
+                  description: |-
+                    path to resource which should be deleted
+
+                    Examples
+                    * /f/342322/path/to/resource
+                    * /cf/23232/path/to/resource
+              required:
+                - fspath
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.info:
+    get:
+      tags:
+        - files
+      summary: file.info - gets info related to a file path
+      operationId: file.info
+      description: |
+        gets info related to a file path
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  file:
+                    $ref: '#/components/schemas/File'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.versions:
+    get:
+      tags:
+        - files
+      summary: file.versions - gets info related to file versions
+      operationId: file.versions
+      description: |
+        gets info related to file versions
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  file:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/File'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /file.thumb:
+    get:
+      tags:
+        - files
+      summary: file.thumb - get thumb image
+      operationId: file.thumb
+      description: |
+        Get the thumb image for a file
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+        - in: query
+          name: width
+          description: Width of the thumbnail in pixels
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: height
+          description: Height of the thumbnail in pixels
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Downloads a thumbnail of the file requested
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /file.zip:
+    get:
+      tags:
+        - files
+      summary: file.zip - download the full filesystem path as a zip
+      operationId: file.zip
+      description: |
+        Download the specified location as a zip
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+      responses:
+        '200':
+          description: Downloads a zip of the folder specified
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.create:
+    post:
+      tags:
+        - channels
+      summary: channel.create - create a new channel
+      operationId: channel.create
+      description: |
+        Create a new channel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_name:
+                  type: string
+                  description: New channel name
+                blurb:
+                  type: string
+                  description: Small blurb that briefly describes the channel content.
+                users:
+                  type: string
+                  description: >-
+                    Comma separated email or phone list to add in addition to
+                    the user requesting this API.
+
+
+                    test1@test.com,+18197432105,test2@gmail.com
+                auto_close_days:
+                  type: integer
+                  description: Automatically close after these many days of inactivity
+                copy_from_channel_id:
+                  type: integer
+                  description: Copy files and settings from this channel to the new channe. This channel must be owned by this user.
+                is_public:
+                  type: boolean
+                  default: 0
+                  deprecated: true
+                  description: >-
+                    Defines if the channel have public access.
+                    If set to true, the channel will have a public access link, and anyone with access to this link will be able to
+                    see the channel content and join the channel.
+                    This property is deprecated. Use allow_join.
+                allow_join:
+                  type: boolean
+                  default: 0
+                  description: >-
+                    Defines if the channel will have access through a link.
+                    If set to true, the channel will have an access link. This link will allow users to self join to the
+                    channel, and in some cases to see channel contents.
+                require_join_approval:
+                  type: boolean
+                  default: 1
+                  description: >-
+                    Defines if the user must wait for a manager to approve his join to the channel. Only used when
+                    `allow_join` is set.
+                allow_external_read:
+                  type: boolean
+                  default: 0
+                  description: >-
+                    Only used when `allow_join` is set. This allows anyone that have the channel link to see its
+                    contents (without joining the channel).
+              required:
+                - channel_name
+      responses:
+        '200':
+          description: results of the channel create and the channel id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channel:
+                    $ref: '#/components/schemas/Channel'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.rename:
+    post:
+      deprecated: true
+      tags:
+        - channels
+      summary: channel.rename - Rename a channel.
+      operationId: channel.rename
+      description: >
+        Rename an existing channel. Only channel owner or Admin can rename a
+        channel. Deprecaded, since the `channel.update` endpoint is able to rename a channel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_name:
+                  type: string
+                  description: New name
+                channel_id:
+                  type: integer
+                  description: Id of the channel to rename
+              required:
+                - channel_name
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel create and the channel id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.list:
+    get:
+      tags:
+        - channels
+      summary: channel.list - list channels for a user
+      operationId: channel.list
+      description: |
+        List all channel for a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: exclude_closed
+          schema:
+            type: boolean
+          description: Include or exclude closed channels in the list response. If not supplied, it is considered to be true
+          required: false
+
+      responses:
+        '200':
+          description: List of channels accessible to the logged in user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channels:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.export:
+    get:
+      tags:
+        - channels
+      summary: channel.export - Export messages, files and actions of a channel
+      operationId: channel.export
+      description: |
+        This API will generate a zip file with all files, CSV file of message and actions. The user must be the owner of the channel to perform this operation
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          schema:
+            type: integer
+          description: ID of the channel to export
+          required: false
+
+      responses:
+        '200':
+          description: Downloads the zip with contents of the channel
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.members:
+    get:
+      tags:
+        - channels
+      summary: channel.members - list users in a channel
+      operationId: channel.members
+      description: |
+        List users in a channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          description: Id of channel to get information
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User objects in a channel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User_Abbr'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.info:
+    get:
+      tags:
+        - channels
+      summary: channel.info - Get information about a channel
+      operationId: channel.info
+      description: |
+        Get information about a channel.
+        This endpoint can be accessed using a notification token (without been authenticated).
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          description: Id of channel to get information
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: results of the channel create and the channel id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channels:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.invite:
+    post:
+      tags:
+        - channels
+      summary: channel.invite - Add  user(s) to a channel
+      operationId: channel.invite
+      description: |
+        Add user(s) to a channel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: The id of the channel to add
+                users:
+                  type: string
+                  description: >-
+                    Comma separated email or phone list to add in addition to
+                    the user requesting this API.
+
+
+                    test1@test.com,+19023762345,test2@gmail.com
+                user_role:
+                  type: integer
+                  description: Role (100 - Owner, 50 - Manager, 20 - Collaborator, 10 - View) for the users to add
+              required:
+                - channel_id
+                - users
+      responses:
+        '200':
+          description: Results of channel invite operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User_Abbr'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.one-on-one:
+    post:
+      tags:
+        - channels
+      summary: channel.one-on-one - Create a 1x1 channel with another user
+      operationId: channel.one-on-one
+      description: |
+        Return the 1x1 channel for the provided user with the logged user. If it don't exists, creates it.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                with_user_id:
+                  type: integer
+                  description: Id of the other user on the channel
+              required:
+                - with_user_id
+      responses:
+        '200':
+          description: Results of channel invite operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.leave:
+    post:
+      tags:
+        - channels
+      summary: channel.leave - Leave a channel.
+      operationId: channel.leave
+      description: >
+        Leave from a Channel. Channel owner cannot leave the channel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to leave
+              required:
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel leave opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.kick:
+    post:
+      tags:
+        - channels
+      summary: channel.kick - Remove a member from a channel.
+      operationId: channel.kick
+      description: >
+        Remove a member from a channel. Only owner or Admins can remove members. Channel owners cannot be kicked out of the channel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to remove the member
+                user_id:
+                  type: integer
+                  description: Id of the member to remove from the channel
+
+              required:
+                - user_id
+                - channel_id
+      responses:
+        '200':
+          description: results of the kick operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.history:
+    get:
+      tags:
+        - channels
+      summary: channel.history - Get messages for a channel
+      operationId: channel.history
+      description: |
+        Get messages for a channel.
+        This endpoint can be accessed using a notification token (without been authenticated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          description: Id of channel to get information
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: Number of older messages to retrieve. Optional. (Default is 10 unless limit_newer is supplied in which case default is 0)
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: limit_newer
+          description: Number of newer messages to retrieve. Optional. Default is 0
+          required: false
+          schema:
+            type: integer
+
+        - in: query
+          name: cursor
+          description: >-
+            Paginate through collections of data by setting the cursor parameter
+            to a next_cursor attribute returned by a previous request's
+            response_metadata.
+
+            Optional. If this is not supplied, Newest message in the system is used as the cursor.
+
+            This will NOT INCLUDE the message pointed by this cursor in the result set when retrieving OLDER messages .
+            This will INCLUDE the message pointed by this cursor in the result set when retrieving NEWER messages (limit_newer is supplied)
+
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: results of the message retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  has_more:
+                    type: boolean
+                    example: true
+                  next_cursor:
+                    type: string
+                    example: MTAwMDEy
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.notifications.manage:
+    post:
+      tags:
+        - channels
+      summary: channel.notifications.manage - Manage user notifications for each channel
+      operationId: channel.notifications.manage
+      description: |
+        Set the subscribing level for notifications on the channel, for a particular user.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to change the subscription level.
+                notification_option:
+                  type: integer
+                  enum: [0,1,2]
+                  description: >
+                    Notification option (can be any of the values below):
+                      * `0` - No notifications (completely unsubscribe)
+                      * `1` - Only notify mentions
+                      * `2` - Notify all unread messages
+              required:
+                - notification_option
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Results of the notifications subscription change
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.read-notification:
+    post:
+      tags:
+        - channels
+      summary: channel.read-notification - Send read notification for a channel
+      operationId: channel.read-notification
+      description: |
+        Mark one or all message as read in the channel.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to change the subscription level.
+                message_id:
+                  type: integer
+                  description: Id of the message. If not supplied, all messages will be marked as read
+              required:
+                - channel_id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Results of the read notification call
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /search.query:
+    get:
+      tags:
+        - search
+      summary: search.query - Search using a search query
+      operationId: search.query
+      description: |
+        Search anywhere based on a search query
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: query
+          description: The search query
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: scope
+          description: Limit the scope of the search based on the result type. If not provided, all result types are included.
+          required: false
+          schema:
+            $ref: '#/components/schemas/SearchTypes'
+        - in: query
+          name: channel
+          description: Search only on one particular channel. If not provided, includes all channels.
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: Number of results to retrieve (per type). Defaults to 3.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Results of the search
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+                  has_more:
+                    type: boolean
+                    example: true
+                  next_cursor:
+                    type: string
+                    example: MTAwMDEy
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.close:
+    post:
+      tags:
+        - channels
+      summary: channel.close - Close a channel.
+      operationId: channel.close
+      description: >
+        Close a Channel. A closed channel will be moved out of active list.
+        Any action such as posting message or adding new user will reactivate the channel.Only channel owner or Admin can close a channel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to leave
+              required:
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel leave opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.remove:
+    post:
+      tags:
+        - channels
+      summary: channel.remove - Delete a channel.
+      operationId: channel.remove
+      description: >
+        Delete a Channel. Channel and all its associated content will be deleted. Once a channel is deleted, it cannot be recovered.
+        Only admin or owner can delete a channel.
+
+            NOTE: Channel delete can take a some time after this call returns success.
+
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to leave
+              required:
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel leave opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+
+  /channel.activate:
+    post:
+      tags:
+        - channels
+      summary: channel.activate - Activate a closed channel.
+      operationId: channel.activate
+      description: >
+        Activate a channel that was previously closed. Only owner or admins activate a channel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel to leave
+              required:
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel leave opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.image.set:
+    post:
+      tags:
+        - channels
+      summary: channel.image.set - Set Channel image asset
+      operationId: channel.image.set
+      description: |
+        Set logo or background image of a channel. Only owner or admin can set the channel asset.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          schema:
+            type: integer
+          description: The channel id image asset to store
+          required: true
+        - in: query
+          name: channel_asset_type
+          schema:
+            type: string
+          description: 'Has to be logo or background'
+          required: true
+        - in: query
+          name: clear_asset
+          schema:
+            type: boolean
+          description: Clear the specified asset type if set. If specified, any files sent with this request will be ignored
+
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: results of the image upload operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.image.get:
+    get:
+      tags:
+        - channels
+      summary: channel.image.get - Get channel image asset
+      operationId: channel.image.get
+      description: |
+        Get logo or background image asset for a channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          schema:
+            type: integer
+          description: The channel id image asset to retrieve
+          required: true
+        - in: query
+          name: channel_asset_type
+          schema:
+            type: string
+          description: 'Has to be logo or background'
+          required: true
+      responses:
+        '200':
+          description: Downloads a image
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.user.setrole:
+    post:
+      tags:
+        - channels
+      summary: channel.user.setrole - Set role for a member of the channel
+      operationId: channel.user.setrole
+      description: >
+        Set role for a member. Only owner or admins set role for channel members.
+        The role can be: 100 - Owner, 50 - Manager, 20 - Collaborator, 10 - Viewer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel
+                user_id:
+                  type: integer
+                  description: Id of the user to set role
+                user_role:
+                  type: integer
+                  description: 100 - Owner, 50 - Manager, 20 - Collaborator, 10 - Viewer
+
+              required:
+                - channel_id
+                - user_id
+                - user_role
+      responses:
+        '200':
+          description: results of the channel set role opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.update:
+    post:
+      tags:
+        - channels
+      summary: channel.update - Update a channel
+      operationId: channel.update
+      description: >
+        Update a channel. Only owner or admins set role for channel members.
+        The role can be: 100 - Owner, 50 - Manager, 20 - Collaborator, 10 - Viewer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel
+                is_favorite:
+                  type: boolean
+                  description: true for favorite, false otherwise
+                channel_name:
+                  type: string
+                  description: The new name of the channel. If not provided, the name is not changed
+                blurb:
+                  type: string
+                  description: The new blurb for the channel. If not provided, the blurb is not changed
+                is_public:
+                  type: boolean
+                  default: 0
+                  deprecated: true
+                  description: >-
+                    Defines if the channel have public access.
+                    If set to true, the channel will have a public access link, and anyone with access to this link will be able to
+                    see the channel content and join the channel. If not provided, previous status is kept.
+                    This property is deprecated. Use allow_join.
+                allow_join:
+                  type: boolean
+                  default: 0
+                  description: >-
+                    Defines if the channel will have access through a link.
+                    If set to true, the channel will have an access link. This link will allow users to self join to the
+                    channel, and in some cases to see channel contents. If not provided, previous status is kept.
+                require_join_approval:
+                  type: boolean
+                  default: 1
+                  description: >-
+                    Defines if the user must wait for a manager to approve his join to the channel. Only used when
+                    `allow_join` is set. If not provided, previous status is kept.
+                allow_external_read:
+                  type: boolean
+                  default: 0
+                  description: >-
+                    Only used when `allow_join` is set. This allows anyone that have the channel link to see its
+                    contents (without joining the channel). If not provided, previous status is kept.
+
+              required:
+                - channel_id
+      responses:
+        '200':
+          description: results of the channel update opeation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.join:
+    post:
+      tags:
+        - channels
+      summary: channel.join - Self join a channel
+      operationId: channel.join
+      description: >
+        Add the logged user to a public channel. The user is added as if the owner invited him, and his role is
+        Collaborator.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Id of the channel
+                public_hash:
+                  type: string
+                  description: The public hash included on the channel public url
+              required:
+                - channel_id
+                - public_hash
+      responses:
+        '201':
+          description: Means that the join operation worked fine. No content for this request.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /action.create:
+    post:
+      tags:
+        - actions
+      summary: action.create - create a new action
+      operationId: action.create
+      description: |
+        Create a new action
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: Channel Id
+                action_name:
+                  type: string
+                  description: New action name
+                action_desc:
+                  type: string
+                  description: Action description
+                action_type:
+                  type: integer
+                  description: Action Type
+                action_status:
+                  type: integer
+                  description: Action Status
+                action_due_date:
+                  oneOf:
+                    - type: string
+                    - type: integer
+                  description: Action Due Date in date string format or timestamp integer format
+                user_ids:
+                  type: string
+                  description: 'Comma separated user ids of assignees. 91010000,91010001'
+                parent_id:
+                  type: integer
+                  description: Indicates that the new action must be a child of the action which the id is passed on this field
+              required:
+                - action_name
+                - action_type
+                - action_status
+                - user_ids
+      responses:
+        '200':
+          description: results of the action create and the action id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  action:
+                    $ref: '#/components/schemas/Action'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /action.update:
+    post:
+      tags:
+        - actions
+      summary: action.update - update an action
+      operationId: action.update
+      description: |
+        Create an action
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                action_id:
+                  type: string
+                  description: Action Id
+                action_name:
+                  type: string
+                  description: Action name
+                action_desc:
+                  type: string
+                  description: Action description
+                action_type:
+                  type: integer
+                  description: Action Type
+                action_status:
+                  type: integer
+                  description: Action Status
+                action_due_date:
+                  oneOf:
+                    - type: string
+                    - type: integer
+                  description: >
+                    Action Due Date in date string format or timestamp integer format.
+                    To remove the due date, pass an empty string.
+                    If the field is not provided, the due date will be kept as it is.
+                user_ids:
+                  type: string
+                  description: 'Comma separated user ids of assignees. 91010000,91010001'
+              required:
+                - action_id
+      responses:
+        '200':
+          description: results of the action create and the action id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  action:
+                    $ref: '#/components/schemas/Action'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /action.move:
+    post:
+      tags:
+        - actions
+      summary: action.move - Changes an action position
+      operationId: action.move
+      description: |
+        Changes an action position
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: action_id
+          description: Id of action to move
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                under:
+                  type: integer
+                  description: >
+                    The moved action will be placed under the action defined by this id (as a child)
+                    Shouldn't be provided if the action is been moved to the root (no parent).
+                after:
+                  type: integer
+                  description: >
+                    The moved action will be placed after the action defined by this id. If not provided, the moved
+                    action will be at the first position.
+      responses:
+        '200':
+          description: results of the action create and the action id if created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /action.info:
+    get:
+      tags:
+        - actions
+      summary: action.info - Get information about an action with assignees
+      operationId: action.info
+      description: |
+        Get information about an action with assignees
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: action_id
+          description: Id of action to get information
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: results of the retrieved action id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  action:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActionEx'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /action.delete:
+    post:
+      tags:
+        - actions
+      summary: action.delete - Delete an action.
+      operationId: action.delete
+      description: |
+        Delete an action. Only owner can delete the action. A bot message
+        and realtime event will be raised for this operation.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                action_id:
+                  type: string
+                  description: Action Id
+      responses:
+        '200':
+          description: results of the retrieved action id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /action.list:
+    get:
+      tags:
+        - actions
+      summary: action.list - Get list of all actions for a channel
+      operationId: action.list
+      description: |
+        Get list of all actions for a channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: channel_id
+          description: Just return the actions from this channel.
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: user_id
+          description: Just return the actions that are assigned to this user. MUST be a valid user id.
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: Just return the actions that have this status (0 for pending, 1 for complete)
+          required: false
+          schema:
+            type: integer
+            enum: [0,1]
+        - in: query
+          name: sort_by
+          description: >
+            Define the sorting method to return the list of actions.
+            Possible values are:
+            - default: The default sorting defined by the user (by drag-drop). This sorting schema is only available
+              when the channel_id filter is defined.
+            - name: Sort by the action name
+            - channel: Sort by the channel name
+            - due_date: Sort by due date (considering sub-tasks).
+          required: false
+          schema:
+            type: string
+            enum: ['default', 'name', 'channel', 'due_date']
+            default: 'default'
+        - in: query
+          name: sort_desc
+          description: >
+            Changes the sorting direction. By default all sorting schemas uses ascending direction, if this flag is set
+            the sorting direction will be descending.
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: search
+          description: A search term. Only actions that match this search term (on name or description), will be returned.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: cursor
+          description: >
+            This value MUST be a valid action_id, base64 encoded. It's used by the infinite pagination, to define the
+            point where to start to bring the results (the number of results are defined by the limit_after and
+            limit_before params. The cursor action, by default is not included on the results, unless both limit_before
+            and limit_after are defined.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit_after
+          description: >
+            Is the max number of actions that will be returned after the defined cursor. If the cursor is not defined,
+            it's the number of actions returned from the beggining.
+            When no limit is defined (neither limit_after or limit_before), limit_after defaults to 30.
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: limit_before
+          description: >
+            Is the max number of actions that will be returned before the cursor. This parameter only makes sense when
+            the cursor is defined (it's ignored otherwise). When both limit_before, and limit_after are defined, the
+            cursor action is included on the results.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: results of the retrieved action id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  action:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Action'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  '/wiki.get/{channelresource}':
+    get:
+      tags:
+        - wiki
+      summary: wiki.get - Gets the wiki associated with the channel
+      operationId: wiki.get
+      description: >
+        Gets the wiki associated with the channel. Typically, the wiki starts
+        with a file named 'index.md'
+
+        So, start the wiki off by using a path like
+        '/wiki.get/wf/10001/index.md'.
+
+
+        You can retrieve the wiki root for the channel from the channel info API
+        call.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: channelresource
+          description: path to channel wiki resource (e.g /wf/10001/index.md)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/html:
+              schema:
+                type: string
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  '/wiki.preview/{channelresource}':
+    post:
+      tags:
+        - wiki
+      summary: wiki.preview - previews the supplied markdown file at a given wiki path
+      operationId: wiki.preview
+      description: >
+        Previews the wiki markdown associated with the wiki resource path.
+        POST the wiki markdown in the body of the HTTP Request, set Content-Type to text/markdown
+
+        So, use a path like
+        '/wiki.get/wf/10001/index.md'.
+
+
+        You can retrieve the wiki root for the channel from the channel info API
+        call.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: channelresource
+          description: path to channel wiki resource (e.g /wf/10001/index.md)
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/markdown:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/html:
+              schema:
+                type: string
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /rtm.connect:
+    get:
+      tags:
+        - realtime
+      summary: rtm.connect - Get realtime engine connection information
+      operationId: rtm.connect
+      description: >
+        This call is to get endpoint information for realtime engine and
+        realtime auth token.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: results of the rtm connect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  rtm:
+                    type: object
+                    properties:
+                      ws_endpoint:
+                        type: string
+                        example: 'ws://ws.endpoint.io:9000'
+                      ws_token:
+                        type: string
+                        example: >-
+                          eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5MTAxMDAwMCwiY2xpZW50X2lwIjoiUG9zdG1hblJ1bnRpbWVcLzcuMTcuMSIsInVzZXJfYWdlbnQiOiIxNzIuMTguMC4xIiwiZXhwaXJ5IjoiMjAxOS0xMC0wMyAxNjoyNTo0NCIsImZpbmdlcl9wcmludCI6Ijd1dzZjc24wN3Q2OSJ9.Mm0NZ5XaEqZrCzkdEgd0WsdL2el6c-cO2B6ScYr0qo8
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /firebase.connect:
+    post:
+      tags:
+        - firebase
+      summary: firebase.connect - Register the requester device as a firebase client for push notifications
+      operationId: firebase.connect
+      description: >
+        This call send the FCM token (a token that uniquely identify a device subscribed to Firebase Cloud Messaging)
+        to the backend, linking it to the logged user. It allows the system to send push notification to all the devices
+        where the logged user is connected. To refresh the token, just send a new connection to the same user.
+        The invalid token will be removed automatically.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The token to be registered
+      responses:
+        '201':
+          description: Means that the connection worked fine.
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /firebase.disconnect:
+    post:
+      tags:
+        - firebase
+      summary: firebase.disconnect - Unregister the requester device as a firebase client for push notifications
+      operationId: firebase.disconnect
+      description: >
+        This call send the current FCM token (a token that uniquely identify a device subscribed to Firebase Cloud Messaging)
+        to the backend, deleting it, and preventint future push notifications to this token.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The token to be removed.
+      responses:
+        '201':
+          description: Means that the disconnection worked fine.
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /system.info:
+    get:
+      tags:
+        - system
+      summary: system.info - Get information about the system
+      operationId: system.info
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: results of the user create operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  info:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: AirSend
+                      version:
+                        type: string
+                        example: 1.0.0.200
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /system.ping:
+    post:
+      tags:
+        - system
+      summary: system.ping - Send a round trip ping
+      operationId: system.ping
+      description: |
+        Send a ping to HTTP end point and receive it in WS to validate backend routes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                finger_print:
+                  type: string
+                  description: Finger print id of the client from RTM connect.
+                ping_token:
+                  type: string
+                  description: Unique token for correlation when received in WS.
+      responses:
+        '200':
+          description: Returned if the fingerprint is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /contact_form.list:
+    get:
+      tags:
+        - contact_form
+      summary: contact_form. - List the active contact forms that logged user own
+      operationId: contact_form.list
+      description: |
+        Lists all the contact forms that the current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Return the list of contact forms
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  forms:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContactForm'
+
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /contact_form.create:
+    post:
+      tags:
+        - contact_form
+      summary: contact_form.create - Creates a contact form
+      operationId: contact_form.create
+      description: |
+        Creates a new contact form
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form_title:
+                  type: string
+                  description: The form title
+                confirmation_message:
+                  type: string
+                  description: The confirmation message. Can include a %CHANNEL_LINK% variable.
+                enable_overlay:
+                  type: boolean
+                  description: Defines if the generated HTML code should open on a modal window, or be directly embeded to the code.
+                  default: false
+                copy_from_channel_id:
+                  type: integer
+                  description: The id of the channel to be used as a template when creating new channels
+                color:
+                  type: string
+                  description: "Color used to render the form. Can be on css hex formats: FFF, #FFF, FFFFFF, #FFFFFF. It's case insensitive."
+      responses:
+        '200':
+          description: Successluly created the form.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  contact_form:
+                    $ref: '#/components/schemas/ContactForm'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /contact_form.update:
+    post:
+      tags:
+        - contact_form
+      summary: contact_form.update - Updates a contact form
+      operationId: contact_form.update
+      description: |
+        Updates an existing contact form
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form_id:
+                  type: integer
+                  description: The form id to be updated
+                form_title:
+                  type: string
+                  description: The new form title.
+                confirmation_message:
+                  type: string
+                  description: The new confirmation message.
+                enable_overlay:
+                  type: boolean
+                  description: Defines if the generated HTML code should open on a modal window, or be directly embeded to the code.
+                  default: false
+                copy_from_channel_id:
+                  type: integer
+                  description: |
+                    The id of the channel to be used as a template when creating new channels. It's optional (the value
+                    is kept if it's not provided). To remove an existing template, it must be set to -1.
+                color:
+                  type: string
+                  description: |
+                    Color used to render the form. Can be on css hex formats: FFF, #FFF, FFFFFF, #FFFFFF. It's case insensitive.
+                    If you pass the "0" value to this field, the current color is removed, and the field gets back to null.
+      responses:
+        '200':
+          description: Successluly updated the form.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  contact_form:
+                    $ref: '#/components/schemas/ContactForm'
+        '204':
+          description: Nothing to update
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /contact_form.delete:
+    post:
+      tags:
+        - contact_form
+      summary: contact_form.delete - Deletes a contact form
+      operationId: contact_form.delete
+      description: |
+        Deletes an existing contact form
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form_id:
+                  type: integer
+                  description: The form id to be updated
+      responses:
+        '204':
+          description: Successluly deleted the form
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /contact_form.fill:
+    post:
+      tags:
+        - contact_form
+      summary: contact_form.fill - Fills a form
+      operationId: contact_form.fill
+      description: |
+        Fills a form, creating a channel and posting the message to it.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form_id:
+                  type: integer
+                  description: The form id to be filled
+                form_filler_name:
+                  type: string
+                  description: The name of the user that is filling the form
+                form_filler_email:
+                  type: string
+                  description: The email of the user that is filling the form
+                form_filler_message:
+                  type: string
+                  description: The message filled on the form
+      responses:
+        '200':
+          description: Successluly filled the form.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  message:
+                    type: string
+                    description: The confirmation message.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /lock.acquire:
+    post:
+      tags:
+        - lock
+      summary: lock.acquire - Take a file lock
+      operationId: lock.acquire
+      description: |
+        Takes lock of the supplied file. The user must have access to the file to
+        lock the file. If the lock is granted a push event via websocket will be sent to
+        all users of the channel if the file is associated with a channel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fspath:
+                  type: string
+                  description: File path to lock
+                expires_after_sec:
+                  type: integer
+                  description: Optional - seconds to automatically release the lock after acquring.
+      responses:
+        '200':
+          description: Lock granted for the file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  lock_id:
+                    type: integer
+                    description: Lock id.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /lock.release:
+    post:
+      tags:
+        - lock
+      summary: lock.release - Release file lock
+      operationId: lock.release
+      description: |
+        Release lock of the file locked earlier.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fspath:
+                  type: string
+                  description: File path to lock
+      responses:
+        '200':
+          description: Lock granted for the file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /lock.refresh:
+    post:
+      tags:
+        - lock
+      summary: lock.refresh - Update expiration of existing lock.
+      operationId: lock.refresh
+      description: |
+        Update expiration of existing
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                lock_id:
+                  type: string
+                  description: File path to lock
+                expires_after_sec:
+                  type: integer
+                  description: seconds to automatically release the lock after acquring.
+
+      responses:
+        '200':
+          description: Lock granted for the file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+
+  /wopi.edit:
+    get:
+      tags:
+        - wopi
+      summary: wop.edit - Edit a supported office document
+      operationId: wopi.edit
+      description: >
+        This call is edit supported office document. The documents supported are
+        docx, xlsx, pptx. doc, xls, ppt will result in conversion and saving a new file.
+        A valid office 365 account is required to edit document.
+
+        The response will be a HTML page to be shown in a new window with embedded script to begin the editing process.
+
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+
+      responses:
+        '200':
+          description: Formatted HTML page to begin editing process.
+          content:
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /wopi.view:
+    get:
+      tags:
+        - wopi
+      summary: wop.view - View a supported office document
+      operationId: wopi.view
+      description: >
+        This call is view supported office document.
+        A valid office 365 account is NOT required to view document.
+
+        The response will be a HTML page to be shown in a new window with embedded script to begin the viewing process.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/fspath'
+      responses:
+        '200':
+          description: Formatted HTML page to begin viewing the document.
+          content:
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /oauth.server.client.list:
+    get:
+      tags:
+        - oauth
+      summary: List the OAuth clients owned by the logged user
+      operationId: oauth.server.client.list
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List with the OauthClients owned by the logged user
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /oauth.server.client.create:
+    post:
+      tags:
+        - oauth
+      summary: Creates a new OAuth Client
+      operationId: oauth.server.client.create
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The created client object
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+
+  /oauth.server.authorize:
+    get:
+      tags:
+        - oauth
+      summary: Endpoint that authorizes or returns the authorization info for an OAuth access
+      operationId: oauth.server.authorize.info
+      security:
+        - bearerAuth: []
+      description: >
+        This endpoint must be called by the UI to authorize a OAuth access request. To use this endpoint, the
+        caller must be authenticated, and it must provide all the required oauth parameters.
+        If the user don't have any token already generated for the same oauth app/scope, the endpoint return the
+        application and scopes info, so the UI can show it to the user and ask for his authorization (calling
+        `oauth.server.authorize` endpoint to authorize the request).
+        If the user already have a valid token, a new authorization is not required, so it will redirect to the
+        callback uri with the generated authorization code.
+        If the parameter `redirect` is not provided, or set to true, the redirect is made using a 302 response. If this
+        parameter is set to true, then a 200 response is returned, containing the redirect uri on the body.
+      parameters:
+        - in: query
+          name: response_type
+          schema:
+            type: string
+            enum: [code]
+          description: The type of the authorization. Only `code` is supported for now
+          required: true
+        - in: query
+          name: client_id
+          schema:
+            type: string
+          description: A valid OAuth client_id
+          required: true
+        - in: query
+          name: redirect_uri
+          schema:
+            type: string
+          description: >
+            The URI to redirect on an successful authorization. This URI must be provided, even if the caller isn't
+            redirecting. It's used for validation.
+          required: true
+        - in: query
+          name: scope
+          schema:
+            type: string
+            default: profile_info
+          description: A space separated list of scopes that the client app is requiring.
+          required: false
+        - in: query
+          name: redirect
+          schema:
+            type: boolean
+            default: true
+          description: >
+            Defines if the request should be redirected (302) directly or just return the redirect_uri on the reponse
+            body.
+          required: false
+      responses:
+        '200':
+          description: Information about the client that is requesting authorization to act in bahalf of the logged user.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      meta:
+                        $ref: '#/components/schemas/Meta'
+                      name:
+                        type: string
+                        description: The name of the application that is requesting access
+                      description:
+                        type: string
+                        description: The application description
+                      scopes:
+                        type: array
+                        items:
+                          type: string
+                      request_key:
+                        type: string
+                        description: A value that must be passed on the approve call to validate the authorization
+                  - type: object
+                    properties:
+                      meta:
+                        $ref: '#/components/schemas/Meta'
+                      location:
+                        type: string
+                        description: >
+                          The redirect URI, with the authorization code attached, to allow the UI to do the redirect.
+        '302':
+          description: Redirects to the callback uri, including the authorization code.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /oauth.server.approve:
+    post:
+      tags:
+        - oauth
+      summary: Approves of denies the requested authorization, redirecting to the callback url
+      operationId: oauth.server.authorize
+      description: >
+        This endpoint directly redirects to the callback url defined on the request, with the authorization code if
+        the access was authorized, or with the errors if something went wrong.
+      security:
+        - bearerAuth: []
+      responses:
+        '302':
+          description: Redirects to the callback url, with the authorization code on the query string.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /oauth.server.access_token:
+    post:
+      tags:
+        - oauth
+      summary: Requests an OAuth access token using one of the available grant types
+      operationId: oauth.server.access_token
+      description: >
+        This endpoint can be called using one of the supported grant types: client_credentials, authorization_code
+        or refresh token to retrieve an access token.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns the Oauth info (including the access token)
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.group.list:
+    get:
+      tags:
+        - channel.group
+      summary: Lists the channel groups for a particular user
+      operationId: channel.group.list
+      description: >
+        Returns an ordered list os the channel groups defined for the logged user.
+        Includes the user defined groups, and the virtual groups (like all channels, favorites, direct messages).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: >
+            Returns the ordered list of groups.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  groups:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChannelGroup'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.group.create:
+    post:
+      tags:
+        - channel.group
+      summary: Create a channel group
+      operationId: channel.group.create
+      description: >
+        Creates a user defined channel group for the logged user.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New group name
+                channels:
+                  type: string
+                  description: Comma separated list of channels to be included on the group
+      responses:
+        '200':
+          description: Returns the channel group object that was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channel_group:
+                    $ref: '#/components/schemas/ChannelGroup'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.group.update:
+    post:
+      tags:
+        - channel.group
+
+      summary: Updates a channel group
+      operationId: channel.group.update
+      description: >
+        Updates a previously created channel group.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_group_id:
+                  type: integer
+                  description: The channel group id that must be updated.
+                name:
+                  type: string
+                  description: New channel group name
+      responses:
+        '200':
+          description: Returns the channel group object with the updated values.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channel_group:
+                    $ref: '#/components/schemas/ChannelGroup'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.group.delete:
+    post:
+      tags:
+        - channel.group
+
+      summary: Deletes a channel group
+      operationId: channel.group.delete
+      description: Deletes a channel group based on it's id.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_group_id:
+                  type: integer
+                  description: The channel group id to delete.
+      responses:
+        '204':
+          description: Empty response to confirm the group deletion.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.group.move:
+    post:
+      tags:
+        - channel.group
+
+      summary: Changes the channel groups order for the user
+      operationId: channel.group.move
+      description: >
+        Changes the order how the groups are listed on `channel.group.list`
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                group_id:
+                  oneOf:
+                    - type: integer
+                    - type: string
+                  description: >
+                    The channel group id to be moved.
+                    It can be an integer (for user defined groups) or a string (for virtual/system defined groups)
+                after:
+                  oneOf:
+                    - type: integer
+                    - type: string
+                  description: >
+                    The channel group id where the group should be moved after.
+                    It can be an integer (for user defined groups) or a string (for virtual/system defined groups)
+      responses:
+        '204':
+          description: Empty success response.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.group.add:
+    post:
+      tags:
+        - channel.group
+
+      summary: Include a channel on a group
+      operationId: channel.group.add
+      description: >
+        Include a given channel to a user defined group.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_group_id:
+                  type: integer
+                  description: The id of the group where the channel should be inserted
+                channel_id:
+                  type: integer
+                  description: The channel to be included on the group.
+      responses:
+        '201':
+          description: Empty success response
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /channel.group.remove:
+    post:
+      tags:
+        - channel.group
+
+      summary: Removes a channel from a group
+      operationId: channel.group.remove
+      description: >
+        Removes a given channel from a user defined group
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_group_id:
+                  type: integer
+                  description: The id of the group from where the channel should be removed from.
+                channel_id:
+                  type: integer
+                  description: The channel to be removed.
+      responses:
+        '204':
+          description: Empty success response
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+
+  /channel.favorite:
+    post:
+      tags:
+        - channel.group
+
+      summary: Set a channel as favorite for the logged user
+      operationId: channel.favorite
+      description: >
+        Set a channel as favorite for a particular user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: The id of the channel to be set as favorite.
+      responses:
+        '201':
+          description: Empty success response
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /channel.unfavorite:
+    post:
+      tags:
+        - channel.group
+
+      summary: Remove a channel from the logged user favorites.
+      operationId: channel.unfavorite
+      description: >
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+                  description: The id of the channel to be removed from the favorites.
+      responses:
+        '204':
+          description: Empty success response.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /call.create:
+    post:
+      tags:
+        - call
+      summary: Start a new call
+      operationId: call.create
+      description: >
+        Create a new call.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                is_public:
+                  type: boolean
+                  description: Create a public call to allow anyone to join
+                channel_id:
+                  type: integer
+                  description: Channel id.
+                allowed_users:
+                  type: string
+                  description: Comma seperated ids of users allowed to join the call. If not supplied, all users of channel will be allowed.
+              required:
+                - is_public
+      responses:
+        '200':
+          description: Returns the channel group object that was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channel_group:
+                    $ref: '#/components/schemas/ChannelGroup'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /call.update:
+    post:
+      tags:
+        - call
+      summary: update a  call
+      operationId: call.update
+      description: >
+        Update a  call.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                is_public:
+                  type: boolean
+                  description: Convert to a public call to allow anyone to join
+                call_hash:
+                  type: string
+                  description: hash of the previously created call
+                allowed_users:
+                  type: string
+                  description: Comma seperated ids of users allowed to join the call
+              required:
+                - call_hash
+      responses:
+        '200':
+          description: Returns the channel group object that was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  channel_group:
+                    $ref: '#/components/schemas/ChannelGroup'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /call.end:
+    post:
+      tags:
+        - call
+      summary: Ends a  call
+      operationId: call.end
+      description: >
+        End a call - Allowed only for call ower.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                call_hash:
+                  type: string
+                  description: hash of the previously created call
+                rtm_token:
+                  type: string
+                  description: Rtm token of the  call creator
+              required:
+                - call_hash
+                - rtm_token
+      responses:
+        '200':
+          description: Empty success message.
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+  /call.join:
+    get:
+      tags:
+        - call
+      summary: Call to allow if a client is allowed to join a call or not
+      operationId: call.join
+      parameters:
+        - in: query
+          name: call_hash
+          description: Hash of the call the user is attempting to join
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: rtm_token
+          description: RTM token of the user attempting to join a private call
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empty success for public call joining (as long as call exists). or  the User object that is joining.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  User:
+                    $ref: '#/components/schemas/User_Abbr'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /call.status:
+    get:
+      tags:
+        - call
+      summary: Send a channel update to all users of a channel - valid only for public channel
+      operationId: call.status
+      parameters:
+        - in: query
+          name: call_hash
+          description: Hash of the private call to send update
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: channel_id
+          description: Id of the channel to send the update
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empty success object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /call.invite:
+    get:
+      tags:
+        - call
+      summary: Invite a user to join a private call. Issuing this for public call will be rejected. A websocket notification will be sent to the user on invite.
+      operationId: call.invite
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: call_hash
+          description: Hash of the private call to send the invite for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: user_id
+          description: Id of the user to invite
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empty success object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+  /call.invite.accept:
+    get:
+      tags:
+        - call
+      summary: Called when user accepts or rejects a invite to join a call. A notification call.invite.accept will be sent to the user connections. This is useful to stop ringing if user responds
+      operationId: call.invite.accept
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: call_hash
+          description: Hash of the private call to send the invite for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: accept
+          description: True if user joins and false if the user rejects the call invite
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Empty success object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          description: Operation Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Meta:
+      type: object
+      required:
+        - ok
+        - code
+        - message
+      properties:
+        ok:
+          type: boolean
+          example: true
+        code:
+          type: integer
+          example: 2
+        message:
+          type: string
+          example: 'Some message'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 91010008
+        email:
+          type: string
+          example: jon.snow@winterfell.com
+        display_name:
+          type: string
+          example: Jon Snow
+        phone:
+          type: string
+          example: '512000002'
+        user_role:
+          type: integer
+          example: 50
+        online_status:
+          type: integer
+          example: 0
+        lang_code:
+          type: string
+          example: en
+        invited_by:
+          type: integer
+          nullable: true
+          example: 91000001
+        notifications_config:
+          type: integer
+          description: >
+            Notification option (can be any of the values below):
+              * `0` - No notifications (completely unsubscribe)
+              * `1` - Only notify mentions
+              * `2` - Notify all unread messages
+        updated_by:
+          type: integer
+          nullable: true
+          example: 91000001
+        created_on:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        created_on_ts:
+          type: integer
+          example: 1572279766
+        last_active_on:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        last_active_on_ts:
+          type: integer
+          example: 1572279766
+        is_terms_agreed:
+          type: boolean
+          example: false
+        is_tour_complete:
+          type: boolean
+          example: false
+        timezone:
+          type: string
+          description: ISO text representation of the user timezone
+          example: America/Denver
+        has_avatar:
+          type: boolean
+          example: false
+        user_fs_roots:
+          type: array
+          items:
+            $ref: '#/components/schemas/user_fs_roots'
+        user_fs_stats:
+          $ref: '#/components/schemas/user_fs_stats'
+    FileAttachment:
+      type: object
+      properties:
+        ctp:
+          type: string
+          example: ATTACHMENT_TYPE_FILE
+        content:
+          type: object
+          properties:
+            path:
+              type: string
+              example: /cf/10018/src.jpg
+            file:
+              type: string
+              example: src.jpg
+            size:
+              type: integer
+              example: 23425234
+    UnfurlAttachment:
+      type: object
+      properties:
+        ctp:
+          type: string
+          example: ATTACHMENT_TYPE_UNFURL
+        content:
+          type: object
+          properties:
+            description:
+              type: string
+              example: some description about the link scraped from the internet
+            favicon:
+              type: string
+              example: 'https://store.steampowered.com/favicon.ico'
+            title:
+              type: string
+              example: some title scraped from the internet
+            url:
+              type: string
+              example: 'https://exyzthe url that was unfurled'
+            images:
+              type: array
+              items:
+                type: string
+                example: 'url: https://some image to use'
+    User_Abbr:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 91010008
+        email:
+          type: string
+          example: jon.snow@winterfell.com
+        display_name:
+          type: string
+          example: Jon Snow
+        last_active_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        online_status:
+          type: boolean
+          example: true
+        has_avatar:
+          type: boolean
+          example: true
+        last_active_on_ts:
+          type: integer
+          example: 1572279766
+    user_fs_roots:
+      type: object
+      properties:
+        type:
+          type: string
+          example: files
+        location:
+          type: string
+          example: /f/51010002
+
+    user_fs_stats:
+      type: object
+      properties:
+        total_fs_count:
+          type: integer
+          example: 137
+        total_file_count:
+          type: integer
+          example: 117
+        total_folder_count:
+          type: integer
+          example: 26
+        total_fs_size:
+          type: integer
+          example: 141381171
+        quota:
+          type: integer
+          example: 101307481240
+
+    File:
+      type: object
+      required:
+        - name
+        - ext
+        - type
+        - creation
+        - modification
+      properties:
+        name:
+          type: string
+          example: hello1.pdf
+        ext:
+          type: string
+          example: pdf
+        type:
+          type: string
+          example: file | folder
+        creation:
+          type: string
+          example: '2019-09-13 01:28:44'
+        modification:
+          type: string
+          example: '2019-09-13 01:28:44'
+    Call:
+      type: object
+      required:
+        - user_id
+        - channel_id
+        - is_public
+        - allowed_users
+        - server_address
+        - call_hash
+        - public_hash
+      properties:
+        user_id:
+          type: integer
+          example: 91010008
+        channel_id:
+          type: integer
+          example: 11010000
+        is_public:
+          type: boolean
+          example: true | false | 1 | 0
+        allowed_users:
+          type: string
+          example: '9101008,9101009'
+        server_address:
+          type: string
+          example: 'xyz.airsend.io'
+        call_hash:
+          type: string
+          example: '4678210287f6d87369686d91ec968991'
+        public_hash:
+          type: string
+          example: '3skcqij413ncoeh3i37svks2yjpvrkka'
+    Channel:
+      type: object
+      required:
+        - team_id
+        - id
+        - channel_name
+        - channel_email
+        - blurb
+        - channel_status
+        - is_auto_closed
+        - close_after_days
+        - last_active_days
+        - created_on
+        - created_by
+        - updated_on
+        - updated_by
+        - latest
+        - members
+        - unread_count
+        - channel_roots
+        - total_fs_count
+        - total_fs_size
+        - total_file_count
+        - total_folder_count,
+        - one_on_one
+        - is_favorite
+        - user_role
+        - has_logo
+        - has_background
+        - oldest_unread_message_id
+        - action_count
+      properties:
+        id:
+          type: integer
+          example: 11010000
+        team_id:
+          type: integer
+          example: 51010000
+        channel_name:
+          type: string
+          example: My Fancy Channel
+        blurb:
+          type: string
+          example: Short description of the channel content
+        channel_status:
+          type: integer
+          example: 1
+          description: 1 to indicate channel is OPEN and 2 to indicate it is CLOSED
+        is_auto_closed:
+          type: boolean
+          example: false
+          description: Enable if this channel setup for auto closing
+        close_after_days:
+          type: integer
+          example: 100
+          description: Automatically close the channel after these many days.
+        last_active_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        member_email:
+          type: string
+          example: 'channel-name+usr-randomhash@airsendmailer.com'
+          description: Email generated for each member of the channel, that allows the member to send messages through email
+        created_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        created_by:
+          type: integer
+          example: 91010000
+          description: User id of the channel creator
+        updated_on:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        updated_by:
+          type: integer
+          example: 91010000
+        latest:
+          $ref: '#/components/schemas/Message'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/User_Abbr'
+        unread_count:
+          type: integer
+          example: 10
+          description: Total number of messages not read by this user in this channel
+        action_count:
+          type: integer
+          example: 10
+          description: Total number of actions in this channel
+        total_fs_count:
+          type: integer
+          example: 1000
+          description: total files and folders in a channel
+        total_fs_size:
+          type: integer
+          example: 118222
+          description: total size of files in a channel in bytes
+        total_file_count:
+          type: integer
+          example: 10
+          description: total number of files in a channel
+        total_folder_count:
+          type: integer
+          example: 10
+          description: total number of folders in a channel
+        user_role:
+          type: integer
+          example: 100
+          description: 100 - Owner, 50 - Manager, 20 - Collaborator, 10 - Viewer
+        is_favorite:
+          type: boolean
+          example: false
+          description: Indicates if this user has favorited this channel
+        has_logo:
+          type: boolean
+          example: false
+          description: Indicates if a custom logo is setup for this channel
+        has_background:
+          type: boolean
+          example: false
+          description: Indicates if a custom background is setup for this channel
+        oldest_unread_message_id:
+          type: integer
+          example: 10022
+          description: The oldest unread message for requesting user. This can be 0 if there are no message in the channel
+        channel_roots:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelRoot'
+        public_url:
+          type: string
+          description: The url that gives public access to the channel. Not available when the channel is private.
+        one_one:
+          type: boolean
+          description: Defines if the channel is a 1x1 channel (don't accept user invites)
+        channel_group_id:
+          type: integer
+          description: Defines the group of this channel for the logged user
+    ChannelRoot:
+      type: object
+      required:
+        - type
+        - location
+      properties:
+        type:
+          type: string
+          example: files
+          description: 'the type of channel root, "files" or "wiki"'
+        location:
+          type: string
+          example: /cf/1002323
+    Message:
+      type: object
+      required:
+        - user_id
+        - channel_id
+        - channel_name
+        - display_name
+        - content_text
+        - attachments
+        - message_type
+        - is_edited
+        - parent_message_id
+        - emoticons
+        - created_on
+      description: >-
+        This is a message object.
+
+
+        message_type is an enum.
+
+        message_type=1 - Regular Message,
+
+        message_type=3 - Quoted message. The parent_message will have an object
+        as described
+
+        message_type=5 - Bot Message.
+
+
+
+        content can be a string or JSON encoded string depending on the
+        message_type If message_type is 5, then it is a JSON encoded string
+        containing a type field and bot_message field when parsed. The type
+        field can be used to render this message differently from a user
+        generated message.
+
+
+
+        Attachment is an array of JSON encoded string. Once it is parsed, This
+        contains two fields. A ctp field and a content JSON object. The ctp can
+        be ATTACHMENT_TYPE_FILE or ATTACHMENT_TYPE_UNFURL. Depending on the ctp
+        value, the content JSON object will contain different data.
+      properties:
+        user_id:
+          type: integer
+          example: 11000000
+        channel_id:
+          type: integer
+          example: 11010000
+        channel_name:
+          type: string
+          example: Test Channel
+        display_name:
+          type: string
+          example: Channel Display Name
+        content_text:
+          type: string
+          example: Hello
+        attachments:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/FileAttachment'
+              - $ref: '#/components/schemas/UnfurlAttachment'
+        message_type:
+          type: integer
+        is_edited:
+          type: boolean
+          example: false
+        read_user_count:
+          type: integer
+          example: 5
+        read_users:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: integer
+                example: 91001002
+              display_name:
+                type: string
+                example: Jamie Lannister
+              read_on:
+                type: string
+                example: '2019-10-28 20:02:17'
+        parent_message:
+          type: object
+          properties:
+            content:
+              type: string
+              example: Winter is coming!
+            created_on:
+              type: string
+              example: '2019-10-28 16:22:46'
+            created_on_ts:
+              type: integer
+              example: 1572279766
+            display_name:
+              type: string
+              example: Ned Stark
+            message_id:
+              type: integer
+              example: 10145
+            user_id:
+              type: integer
+              example: 91010007
+        source:
+          type: string
+          description: Defines the source of the message
+          enum:
+            - email
+            - chat
+        emoticons:
+          type: array
+          items:
+            type: object
+            properties:
+              dn:
+                type: string
+                example: Lich King
+              ev:
+                type: string
+                example: "\U0001F44D"
+              uid:
+                type: integer
+                example: 91010000
+        created_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+    Attachment:
+      type: object
+    SearchResult:
+      type: object
+      required:
+        - type
+        - highlighted
+        - subject
+      properties:
+        type:
+          $ref: '#/components/schemas/SearchTypes'
+        highlighted:
+          type: string
+          example: Hey Rob Stark, how is the <em>project</em> going?
+          description: The ocurrences of the search highlighted on contex.
+        subject:
+          oneOf:
+            - $ref: '#/components/schemas/MessageSearchResult'
+            - $ref: '#/components/schemas/FileSearchResult'
+            - $ref: '#/components/schemas/ActionSearchResult'
+            - $ref: '#/components/schemas/UserSearchResult'
+    Action:
+      type: object
+      required:
+        - id
+        - channel_id
+        - channel_name
+        - action_name
+        - action_desc
+        - action_type
+        - action_status
+        - due_on
+        - created_on
+        - created_by
+        - updated_on
+        - updated_by
+      properties:
+        id:
+          type: integer
+          example: '10001'
+        channel_id:
+          type: integer
+          example: '11010000'
+        channel_name:
+          type: string
+          example: 'Test Channel'
+        action_name:
+          type: string
+          example: Some action
+        action_desc:
+          type: string
+          example: Description for action
+        action_type:
+          type: integer
+          example: 1
+        action_status:
+          type: integer
+          example: 1
+        due_on:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        created_on:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        created_by:
+          type: integer
+          example: 91010000
+        updated_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        updated_by:
+          type: integer
+          example: 91010000
+    ActionEx:
+      type: object
+      required:
+        - id
+        - channel_id
+        - action_name
+        - action_desc
+        - action_type
+        - action_status
+        - due_on
+        - created_on
+        - created_by
+        - updated_on
+        - updated_by
+        - users
+      properties:
+        id:
+          type: integer
+          example: '10001'
+        channel_id:
+          type: integer
+          example: '11010000'
+        action_name:
+          type: string
+          example: Some action
+        action_desc:
+          type: string
+          example: Description for action
+        action_type:
+          type: integer
+          example: 1
+        action_status:
+          type: integer
+          example: 1
+        due_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        created_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        created_by:
+          type: integer
+          example: 91010000
+        updated_on:
+          type: string
+          format: date-time
+          example: '2019-10-25 14:49:01'
+        updated_by:
+          type: integer
+          example: 91010000
+        users:
+          type: array
+          items:
+            type: string
+    MessageAlert:
+      type: object
+      required:
+        - alert_id
+        - alert_type
+        - message_id
+        - type
+        - creation
+        - modification
+      properties:
+        alert_id:
+          type: integer
+          example: 5
+        alert_type:
+          type: integer
+          example: 40
+        message_id:
+          type: integer
+          example: 10004
+        alert_text:
+          type: string
+          example: ... @91010000 mentioned you ...
+        channel_id:
+          type: integer
+          example: 11010000
+        is_read:
+          type: boolean
+          example: false
+        from:
+          type: array
+          items:
+            $ref: '#/components/schemas/User_Abbr'
+    UserCode:
+      type: object
+      required:
+        - user_id
+        - code_type
+        - code
+        - expires
+        - created_on
+        - id
+      properties:
+        user_id:
+          type: integer
+          example: 91010000
+        code_type:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: xxxxxx
+        expires:
+          type: string
+          example: '2019-09-13 01:28:44'
+        created_on:
+          type: string
+          example: '2019-09-13 01:28:44'
+        id:
+          type: integer
+          example: 1
+    Error:
+      type: object
+      required:
+        - ok
+        - error
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Something went wrong
+        code:
+          type: integer
+          example: 2343843
+    SearchTypes:
+      type: string
+      enum:
+        - message
+        - action
+        - file
+        - user
+      example: message
+    MessageSearchResult:
+      type: object
+      required:
+        - message_id
+        - user_id
+        - user_name
+        - user_email
+        - channel_id
+        - channel_name
+        - content
+        - relevance
+      description: The search result for a message
+      properties:
+        message_id:
+          type: integer
+          example: 11000000
+        user_id:
+          type: integer
+          example: 11010000
+        user_name:
+          type: string
+          example: John Snow
+        user_email:
+          type: string
+          example: john.snow@wall.north
+        channel_id:
+          type: integer
+          example: 11010000
+        channel_name:
+          type: string
+          example: Test Channel
+        content:
+          type: string
+          example: Hello
+    FileSearchResult:
+      type: object
+    ActionSearchResult:
+      type: object
+    UserSearchResult:
+      type: object
+      required:
+        - user_id
+        - email
+        - display_name
+        - has_avatar
+      description: The search result for an user
+      properties:
+        user_id:
+          type: integer
+        email:
+          type: string
+        display_name:
+          type: string
+        has_avatar:
+          type: boolean
+    ContactForm:
+      type: object
+      required:
+        - id
+        - owner_id
+        - form_title
+        - confirmation_message
+        - form_hash
+        - copy_from_channel_id
+        - enable_overlay
+        - color
+        - enabled
+      properties:
+        id:
+          type: integer
+        owner_id:
+          type: integer
+        form_title:
+          type: string
+        confirmation_message:
+          type: string
+        form_hash:
+          type: string
+        copy_from_channel_id:
+          type: integer
+        enable_overlay:
+          type: boolean
+        color:
+          type: string
+        enabled:
+          type: boolean
+    ChannelGroup:
+      type: object
+      required:
+        - id
+        - name
+        - virtual
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          description: >
+            Must be a int when the group is a user defined group (non virtual).
+            Must be a string when the group is a virtual group (system defined group).
+        name:
+          type: string
+          description: Group name that should be rendered (it varies depending on the user language).
+        virtual:
+          type: boolean
+          description: >
+            When `virtual` is false, it's expected that the id is an integer. When it's true, the id should be a string.
+            Virtual groups have their own logic handled by the UI when grouping the channels.
+            Non virtual groups are user-created groups, the it's id will be found on the channel object, on
+            `channel_group_id` param.
+  parameters:
+    fspath:
+      in: query
+      name: fspath
+      description: path to location
+      required: true
+      schema:
+        type: string

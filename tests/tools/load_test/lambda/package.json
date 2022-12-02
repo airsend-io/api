@@ -1,0 +1,21 @@
+{
+  "name": "load-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "async-parallel": "^1.2.3",
+    "axios": "^0.21.0",
+    "cli-progress": "^3.9.0",
+    "config": "^3.3.2",
+    "lodash": "^4.17.20",
+    "lorem-ipsum": "^2.0.3",
+    "moment": "^2.29.1",
+    "query-string": "^6.13.6",
+    "uuid": "^8.3.2",
+    "websocket": "^1.0.32"
+  }
+}

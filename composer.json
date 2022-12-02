@@ -1,0 +1,99 @@
+{
+    "name": "codelathe/airsend",
+    "description": "Transactional Messaging and FileSharing App",
+    "keywords": ["filesharing", "messaging", "chat", "workspace"],
+    "homepage": "https://www.getfilecloud.com",
+    "license": "Proprietary Software License",
+    "require": {
+        "php": ">=7.2",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "aws/aws-sdk-php": "^3.111",
+        "cocur/slugify": "^4.0",
+        "elasticsearch/elasticsearch": "^7.0",
+        "erusev/parsedown": "^1.7",
+        "ezyang/htmlpurifier": "^4.11",
+        "firebase/php-jwt": "^5.0",
+        "flow/jsonpath": "^0.4.0",
+        "google/apiclient": "^2.0",
+        "google/recaptcha": "^1.2",
+        "griffinledingham/php-apple-signin": "^1.1",
+        "guzzlehttp/psr7": "^1.6",
+        "hybridauth/hybridauth": "~3.0",
+        "illuminate/translation": "*",
+        "jeremeamia/superclosure": "^2.0",
+        "league/oauth2-server": "^8.1",
+        "lsolesen/pel": "^0.9.10",
+        "maennchen/zipstream-php": "^2.0",
+        "mailgun/mailgun-php": "^2.8.1",
+        "maxmind-db/reader": "~1.0",
+        "monolog/monolog": "^1.24",
+        "nesbot/carbon": "^2.32",
+        "patrickbussmann/oauth2-apple": "^0.2.2",
+        "php-di/php-di": "^6.0",
+        "php-http/guzzle6-adapter": "*",
+        "php-mime-mail-parser/php-mime-mail-parser": "^6.0",
+        "phpoffice/phpword": "^0.17.0",
+        "predis/predis": "^1.0",
+        "ralouphie/mimey": "^2.1",
+        "ramsey/uuid": "^4.0",
+        "signalwire/signalwire": "^2.3",
+        "slim/psr7": "^0.5",
+        "slim/slim": "^4.1",
+        "snipe/banbuilder": "^2.3",
+        "solarium/solarium": "~5.0.0",
+        "symfony/cache": "^4.3",
+        "symfony/event-dispatcher": "^4.3",
+        "symfony/process": "^5.1",
+        "twilio/sdk": "^5.36",
+        "whichbrowser/parser": "^2.1",
+        "wixel/gump": "1.5.*"
+    },
+    "require-dev": {
+        "codeception/codeception": "^3.1",
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "CodeLathe\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "vendor/bin/codecept run",
+        "asclouddbinit" : "php resources/cli/cli.php -r resources/db/asclouddbinitialize.php",
+        "asstoragedbinit" : "php resources/cli/cli.php -r resources/db/asstoragedbinitialize.php",
+        "initdb" : [
+            "@asclouddbinit",
+            "@asstoragedbinit"
+        ],
+        "clsetup" : "php resources/cli/cli.php -r resources/dev/codelathe_test_setup.php",
+        "flushcache" : "php resources/cli/cli.php -r resources/db/flushcache.php",
+        "dbmigrate" : "php resources/cli/cli.php -r resources/db/dbmigrate.php",
+        "cubesmigrate" : "php resources/cli/cli.php -r resources/dw/cubesmigrate.php",
+        "index_messages": "php resources/cli/cli.php -r resources/indexes/indexMessages.php",
+        "index_files": "php resources/cli/cli.php -r resources/indexes/indexFiles.php",
+        "index_users": "php resources/cli/cli.php -r resources/indexes/indexUsers.php",
+        "index_actions": "php resources/cli/cli.php -r resources/indexes/indexActions.php",
+        "index_channels": "php resources/cli/cli.php -r resources/indexes/indexChannels.php",
+        "index": [
+            "@index_messages",
+            "@index_files",
+            "@index_users",
+            "@index_actions",
+            "@index_channels"
+        ],
+        "list_indices": "php resources/cli/cli.php -r resources/indexes/listIndices.php",
+        "delete_index": "php resources/cli/cli.php -r resources/indexes/deleteIndex.php",
+        "index_entry": "php resources/cli/cli.php -r resources/indexes/checkIndexEntry.php",
+        "reset_password": "php resources/cli/cli.php -r resources/db/resetuserpassword.php"
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "url": "https://protoss.airsend.io/api",
+  "channel": 11010009,
+  "typingInterval": 1000,
+  "messageInterval": 100,
+  "numberOfMessages": 20,
+  "progressbar": true,
+  "users": [
+    "jeferson.almeida@codelathe.com:jeferson.almeida@codelathe.com",
+    "anis@codelathe.com:anis@codelathe.com",
+    "madhan@codelathe.com:madhan@codelathe.com"
+  ]
+}

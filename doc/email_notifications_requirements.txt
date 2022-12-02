@@ -1,0 +1,37 @@
+Email Notifications
+
+
+General Message Structure
+Messages should contain a max of X messages and additional messages should be truncated and simply say (+ 20 more messages).
+Messages should be sent per channel (not multiple channel messages in a single email)
+Messages should have channel logos if set, otherwise use the Airsend Logo
+Messages should have report email and it should target the channel owner for action or follow up.
+Users clicking  on manage notification settings would open the channel view and would be able to say either
+— Global NO emails from AirSend ever
+— Global Only Daily Frequency
+— Channel specific : No emails or frequency and also whether they want emails on @mention
+
+Message Frequency
+- For a task assigned, an email must go out immediately regardless of the user’s login status
+
+- When a user has never finalized an account and not logged in.
+    - All messages in channels he is in should be sent as email
+    - First message should go out within a few mins.
+    - Subsequent messages should accumulate and wait for more and more time. Say  10 mins, 30 mins, 1 hour, 2 hours, 6 hours . This backoff should be reset after 24 hours. So the next day the first message goes out immediately.
+    - When a user is @mentioned, it should be sent out immediately as an email
+
+- When a user has finalized an account and has logged in
+    - If the last login is less than 24 hours, no email is sent for regular messages
+    - If the message is marked as unread for more than 24 hours, then a daily summary email must be sent via Cron
+    - If the user is @mentioned, it should be sent as an email if the user hasn’t logged in for over 1 hour
+
+
+
+Questions:
+ - To manage notifications, whe user must have a finalized account?
+ - Global only daily frequency or what? What are the other options?
+ - Channel specific:
+   - Frequency: What are the options?
+   - Mentions: yes or no?
+ - Does the frequency definitions override the user options? i.e: I can't send regular messages notifications, for a user
+ that was logged on the last 24 hours, but the user set the frequency to 30 min...

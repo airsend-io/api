@@ -1,0 +1,1 @@
+This directory stores the profiling data (only for development purposes).

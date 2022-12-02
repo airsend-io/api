@@ -1,0 +1,52 @@
+channel_paths:
+  -
+    id: '10000'
+    channel_id: '11010000'
+    path_type: '1'
+    path_value: '/f/51010000/Channels/New Test Channel/files'
+    created_on: '2019-12-10 03:00:09'
+    created_by: '91010000'
+  -
+    id: '10001'
+    channel_id: '11010000'
+    path_type: '2'
+    path_value: '/f/51010000/Channels/New Test Channel/wiki'
+    created_on: '2019-12-10 03:00:09'
+    created_by: '91010000'
+  -
+    id: '10002'
+    channel_id: '11010000'
+    path_type: '3'
+    path_value: '/f/51010000/Channels/New Test Channel/deleted items'
+    created_on: '2019-12-10 03:00:09'
+    created_by: '91010000'
+
+channel_users:
+  -
+    channel_id: '11010000'
+    user_id: '91010000'
+    user_role: '100'
+    is_favorite: '0'
+    notifications_config: '3'
+    email_tag:
+      filter: randStringFilter
+      params: 8
+    created_on: '2019-12-10 03:00:08'
+    created_by: '91010000'
+
+channels:
+  -
+    id: '11010000'
+    team_id: '51010000'
+    channel_name: 'New Test Channel'
+    channel_email: chan_3u9pt6
+    channel_status: '1'
+    is_auto_closed: '0'
+    close_after_days: null
+    last_active_on: '2019-12-10 03:00:08'
+    has_logo: '0'
+    has_background: '0'
+    created_on: '2019-12-10 03:00:08'
+    owned_by: '91010000'
+    updated_on: null
+    updated_by: null

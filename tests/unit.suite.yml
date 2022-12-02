@@ -1,0 +1,17 @@
+# Codeception Test Suite Configuration
+#
+# Suite for unit or integration tests.
+
+actor: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - \Helper\Unit
+        - Db:
+            dsn: '%AIRSEND_CLOUD_DB_TESTS_HOST%'
+            user: '%AIRSEND_DB_ROOT_USER%'
+            password: '%AIRSEND_DB_ROOT_PASSWORD%'
+            cleanup: true
+            populate: true
+            populator: 'php resources/cli/cli.php -r resources/db/asclouddbinitialize.php'
+    step_decorators: ~

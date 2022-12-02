@@ -1,0 +1,202 @@
+policies:
+  -
+    id: '1'
+    context_id: '51010000'
+    context_type: '30'
+    policy_name: STORAGE_QUOTA_IN_GB
+    policy_value: '100'
+    updated_on: '2019-12-10 02:25:06'
+team_users:
+  -
+    team_id: '51000000'
+    user_id: '91000000'
+    user_role: '100'
+    created_on: '2019-12-10 02:25:04'
+    created_by: '91000000'
+  -
+    team_id: '51010000'
+    user_id: '91010000'
+    user_role: '100'
+    created_on: '2019-12-10 02:25:05'
+    created_by: '91010000'
+teams:
+  -
+    id: '51000000'
+    team_name: 'My Team 91000000'
+    team_type: '1'
+    created_on: '2019-12-10 02:25:04'
+    created_by: '91000000'
+    updated_on: null
+    updated_by: null
+  -
+    id: '51000001'
+    team_name: 'My Team 91000001'
+    team_type: '1'
+    created_on: '2019-12-10 02:25:05'
+    created_by: '91000001'
+    updated_on: null
+    updated_by: null
+  -
+    id: '51000002'
+    team_name: 'My Team 91000002'
+    team_type: '1'
+    created_on: '2019-12-10 02:25:05'
+    created_by: '91000002'
+    updated_on: null
+    updated_by: null
+  -
+    id: '51010000'
+    team_name: 'My Team 91010000'
+    team_type: '1'
+    created_on: '2019-12-10 02:25:05'
+    created_by: '91010000'
+    updated_on: null
+    updated_by: null
+
+users:
+  -
+    id: '91000000'
+    email: admin@airsend.io
+    phone: null
+    password: $2y$10$3c2aKQ/hvrtxtB27cpRpP.xIjTXIZUtoa9CWI1G8vgR8xoFETDEOa
+    display_name: serviceadmin
+    has_avatar: '0'
+    user_role: '100'
+    account_status: '100'
+    approval_status: '10'
+    trust_level: '0'
+    online_status: '0'
+    is_auto_pwd: '0'
+    is_terms_agreed: '0'
+    is_tour_complete: '0'
+    is_email_verified: '1'
+    is_phone_verified: '0'
+    date_format: null
+    time_format: null
+    lang_code: en
+    invited_by: null
+    is_pwd_reset: '0'
+    is_locked: '0'
+    last_active_on: '2019-12-10 02:25:07'
+    notifications_config: '3'
+    created_on: '2019-12-10 02:25:04'
+    updated_on: null
+    updated_by: null
+  -
+    id: '91000001'
+    email: bot@airsend.io
+    phone: null
+    password: $2y$10$xXZKUocxpw7Idh4srSMzuet8ikSDfKbCYh8bPBpRgoVI8cV/TuD/y
+    display_name: botuser
+    has_avatar: '0'
+    user_role: '90'
+    account_status: '100'
+    approval_status: '10'
+    trust_level: '0'
+    online_status: '0'
+    is_auto_pwd: '1'
+    is_terms_agreed: '0'
+    is_tour_complete: '0'
+    is_email_verified: '0'
+    is_phone_verified: '0'
+    date_format: null
+    time_format: null
+    lang_code: en
+    invited_by: null
+    is_pwd_reset: '0'
+    is_locked: '0'
+    last_active_on: '2019-12-10 02:25:05'
+    notifications_config: '3'
+    created_on: '2019-12-10 02:25:05'
+    updated_on: null
+    updated_by: null
+  -
+    id: '91000002'
+    email: microservice@airsend.io
+    phone: null
+    password: $2y$10$9JBgH5agpkS/9ksDqxZngO8WAyRGLFPAZ5D7T5nszuIghiQIez0sm
+    display_name: 'Micro Service User'
+    has_avatar: '0'
+    user_role: '90'
+    account_status: '100'
+    approval_status: '10'
+    trust_level: '0'
+    online_status: '0'
+    is_auto_pwd: '1'
+    is_terms_agreed: '0'
+    is_tour_complete: '0'
+    is_email_verified: '0'
+    is_phone_verified: '0'
+    date_format: null
+    time_format: null
+    lang_code: en
+    invited_by: null
+    is_pwd_reset: '0'
+    is_locked: '0'
+    last_active_on: '2019-12-10 02:25:05'
+    notifications_config: '3'
+    created_on: '2019-12-10 02:25:05'
+    updated_on: null
+    updated_by: null
+  -
+    id: '91010000'
+    email: channelunittest@airsendmail.com
+    phone: null
+    password: $2y$10$p4.oA0haxunZIa/W/pd0AufFYOpoUu0odsblASUo5pfRnK98bOaha
+    display_name: 'Channel Unit Test User'
+    has_avatar: '0'
+    user_role: '50'
+    account_status: '100'
+    approval_status: '10'
+    trust_level: '0'
+    online_status: '0'
+    is_auto_pwd: '0'
+    is_terms_agreed: '0'
+    is_tour_complete: '0'
+    is_email_verified: '1'
+    is_phone_verified: '0'
+    date_format: null
+    time_format: null
+    lang_code: en
+    invited_by: null
+    is_pwd_reset: '0'
+    is_locked: '0'
+    last_active_on: '2019-12-10 02:25:06'
+    notifications_config: '3'
+    created_on: '2019-12-10 02:25:05'
+    updated_on: '2019-12-10 02:25:07'
+    updated_by: '91000000'
+
+channels:
+  -
+    id: '11010000'
+    team_id: '51010000'
+    channel_name: 'New Test Channel'
+    channel_email: chan_vlp8sl
+    channel_status: '1'
+    is_auto_closed: '0'
+    close_after_days: null
+    last_active_on: '2019-12-10 03:11:56'
+    has_logo: '0'
+    has_background: '0'
+    created_on: '2019-12-10 03:11:56'
+    created_by: '91010000'
+    updated_on: null
+    updated_by: null
+
+notifications:
+  - id: 1
+    token: myawesometoken
+    user_id: 91010000
+    context_type: 1
+    context_id: 11010000
+    media_type: 1
+    notification_type: 1
+
+channel_users:
+  - channel_id: 11010000
+    user_id: 91010000
+    user_role: 10
+    is_favorite: false
+    notifications_config: 3
+    created_by: 91000000

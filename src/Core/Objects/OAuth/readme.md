@@ -1,0 +1,1 @@
+This directory holds the classes related to the models/entities of the Oauth Authorization server.

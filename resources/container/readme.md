@@ -1,0 +1,1 @@
+This directory stores the di container compiled data. It must be dropped on each deploy.
